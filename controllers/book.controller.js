@@ -1,55 +1,87 @@
-const e = require('express');
-const {books} = require('../models/book.model');
+const bookTable = require('../models/book.model');
+const db = require('../db');
+const { eq } = require('drizzle-orm');
 
-// get all books
+// GET all books
+const getAllBooks = async (req, res) => {
+  try {
+    const books = await db.select().from(bookTable);
+    return res.json(books);
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to fetch books' });
+  }
+};
 
-exports.getAllBooks = (req, res) => {
-    res.json(books);
-}
+// GET book by id
+const getBookById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-// get book by id
+    const [book] = await db
+      .select()
+      .from(bookTable)
+      .where(eq(bookTable.id, id))
+      .limit(1);
 
-exports.getBookById = (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        return res.status(400).json({error: 'Invalid book ID'});
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found' });
     }
-    const book = books.find(b => b.id === id);
 
-    if(!book) {
-        return res.status(404).json({error: 'Book not found'}); 
-    }
-    res.json(book);
-}
+    return res.json(book);
+  } catch (err) {
+    return res.status(400).json({ error: 'Invalid book id' });
+  }
+};
 
-// add new book
-exports.addNewBook = (req, res) => {
-    const { title, author } = req.body;
-    if (!title || title.trim() === "") {
-        return res.status(400).json({ error : "Title is required"});
+// CREATE book
+const addNewBook = async (req, res) => {
+  try {
+    const { title, authorId, description } = req.body;
+
+    if (!title || !authorId) {
+      return res.status(400).json({
+        error: 'title and authorId are required',
+      });
     }
-    if (!author || author.trim() === "") {
-        return res.status(400).json({ error : "Author is required"});
-    }
-    const newBook = {
-        id : books.length +1,
+
+    const [result] = await db
+      .insert(bookTable)
+      .values({
         title,
-        author
-    };
-    books.push(newBook);
-    res.status(201).json(newBook);
-}
+        authorId,
+        description,
+      })
+      .returning({ id: bookTable.id });
 
-// delete book by id
-exports.deleteBookById = (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        return res.status(400).json({error: 'Invalid book ID'});
-    }
-    const bookIndex = books.findIndex(b => b.id === id);
-    if(bookIndex < 0) {
-        return res.status(404).json({error: 'Book not found'}); 
-    }   
-    books.splice(bookIndex, 1);
-    res.json({ message: 'Book deleted successfully' });
-}
+    return res.status(201).json({
+      message: 'Book created successfully',
+      id: result.id,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: 'Failed to create book',
+    });
+  }
+};
+
+// DELETE book by id
+const deleteBookById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await db
+      .delete(bookTable)
+      .where(eq(bookTable.id, id));
+
+    return res.json({ message: 'Book deleted successfully' });
+  } catch (err) {
+    return res.status(400).json({ error: 'Invalid book id' });
+  }
+};
+
+module.exports = {
+  getAllBooks,
+  getBookById,
+  addNewBook,
+  deleteBookById,
+};

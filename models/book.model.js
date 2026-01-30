@@ -1,8 +1,13 @@
-// In-memory database (for learning)
+const { pgTable, uuid, varchar, text } = require("drizzle-orm/pg-core");
+const authors = require("./author.model");
 
-let books = [
-  { id: 1, title: "Node.js Basics", author: "Rohit" },
-  { id: 2, title: "Express Deep Dive", author: "Harsh" }
-];
+const books = pgTable("books", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title", { length: 100 }).notNull(),
+  description: text("description"),
+  authorId: uuid("author_id")
+    .references(() => authors.id)
+    .notNull(),
+});
 
-module.exports = { books };
+module.exports = books;

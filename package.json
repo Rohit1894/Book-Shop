@@ -1,10 +1,10 @@
 {
   "name": "book-shop",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bookstore API using Express, Middleware, MVC",
   "main": "index.js",
   "scripts": {
-    "start" : "node --watch index.js",
+    "start": "node --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,10 +12,22 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "express": "^5.2.1"
+    "dotenv": "^17.2.3",
+    "drizzle-kit": "^0.31.8",
+    "drizzle-orm": "^0.45.1",
+    "express": "^5.2.1",
+    "pg": "^8.17.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rohit1894/Book-Shop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rohit1894/Book-Shop/issues"
+  },
+  "homepage": "https://github.com/Rohit1894/Book-Shop#readme"
 }
