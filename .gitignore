@@ -4,24 +4,3 @@ node_modules/
 # Environment variables
 .env
 
-# Logs
-logs.txt
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Editor / IDE files
-.vscode/
-.idea/
-
-# Build / cache (if any later)
-dist/
-build/
-
-# Drizzle / DB generated files (optional but recommended)
-drizzle/meta/
